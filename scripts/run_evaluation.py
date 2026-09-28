@@ -111,25 +111,32 @@ def run() -> list[dict[str, Any]]:
             retrieved_source_ids=response.source_ids,
             retrieval_scores=response.retrieval_scores,
         )
-        outcome = evaluator.evaluate_response(
-            case["prompt"], response.answer, case.get("reference_answer"), response.retrieved_contexts
-        )
-        record.update(outcome.scores)
         semantic_required = any(case.get(key) is not None for key in (
             "minimum_correctness", "minimum_relevance", "minimum_groundedness"
         ))
+        if semantic_required:
+            outcome = evaluator.evaluate_response(
+                case["prompt"], response.answer, case.get("reference_answer"), response.retrieved_contexts
+            )
+            record.update(outcome.scores)
+        else:
+            outcome = None
         if semantic_required and any(
-            outcome.scores.get(name) is None and case.get(threshold) is not None
+            outcome is not None
+            and outcome.scores.get(name) is None
+            and case.get(threshold) is not None
             for name, threshold in (
                 ("correctness_score", "minimum_correctness"),
                 ("relevance_score", "minimum_relevance"),
                 ("groundedness_score", "minimum_groundedness"),
             )
         ):
-            record["failure_reason"] = outcome.error or "Required semantic score unavailable."
+            record["failure_reason"] = (
+                outcome.error if outcome is not None else None
+            ) or "Required semantic score unavailable."
             records.append(record)
             continue
-        decision = score_case(case, result, outcome.scores)
+        decision = score_case(case, result, outcome.scores if outcome is not None else EMPTY_SCORES)
         record.update(rule_checks=decision.rule_checks, pass_fail=decision.status, failure_reason=decision.failure_reason)
         records.append(record)
     return records

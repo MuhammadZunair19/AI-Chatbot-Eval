@@ -20,8 +20,8 @@ class Settings(BaseModel):
     llm_api_key: str = "ollama"
     llm_model: str = "llama3.2:3b"
     llm_base_url: str = "http://localhost:11434/v1"
-    ragas_evaluator_model: str | None = None
-    ragas_embedding_model: str | None = None
+    ragas_evaluator_model: str | None = "mistral"
+    ragas_embedding_model: str | None = "nomic-embed-text"
     top_k: int = Field(default=3, ge=1, le=15)
     retrieval_min_score: float = Field(default=0.10, ge=0, le=1)
     latency_threshold_ms: int = Field(default=5000, gt=0)
@@ -36,8 +36,8 @@ class Settings(BaseModel):
             llm_api_key=os.getenv("LLM_API_KEY", "ollama"),
             llm_model=os.getenv("LLM_MODEL", "llama3.2:3b"),
             llm_base_url=os.getenv("LLM_BASE_URL", "http://localhost:11434/v1").rstrip("/"),
-            ragas_evaluator_model=os.getenv("RAGAS_EVALUATOR_MODEL") or None,
-            ragas_embedding_model=os.getenv("RAGAS_EMBEDDING_MODEL") or None,
+            ragas_evaluator_model=os.getenv("RAGAS_EVALUATOR_MODEL", "mistral") or None,
+            ragas_embedding_model=os.getenv("RAGAS_EMBEDDING_MODEL", "nomic-embed-text") or None,
             top_k=int(os.getenv("TOP_K", "3")),
             retrieval_min_score=float(os.getenv("RETRIEVAL_MIN_SCORE", "0.10")),
             latency_threshold_ms=int(os.getenv("LATENCY_THRESHOLD_MS", "5000")),

@@ -4,11 +4,20 @@ from app.config import Settings
 
 
 def test_ollama_defaults_are_valid(monkeypatch) -> None:
-    for name in ("LLM_API_KEY", "LLM_MODEL", "LLM_BASE_URL", "TOP_K"):
+    for name in (
+        "LLM_API_KEY",
+        "LLM_MODEL",
+        "LLM_BASE_URL",
+        "RAGAS_EVALUATOR_MODEL",
+        "RAGAS_EMBEDDING_MODEL",
+        "TOP_K",
+    ):
         monkeypatch.delenv(name, raising=False)
     settings = Settings.from_env()
     assert settings.llm_base_url == "http://localhost:11434/v1"
     assert settings.llm_model
+    assert settings.ragas_evaluator_model == "mistral"
+    assert settings.ragas_embedding_model == "nomic-embed-text"
     assert settings.top_k == 3
 
 

@@ -115,6 +115,8 @@ Copy `.env.example` to `.env`; never commit `.env` or real credentials.
 
 ```bash
 ollama pull llama3.2:3b
+ollama pull mistral
+ollama pull nomic-embed-text
 ollama serve
 ```
 
@@ -128,7 +130,7 @@ LLM_BASE_URL=http://localhost:11434/v1
 
 Ollama ignores the placeholder key, but the non-empty value keeps OpenAI-compatible clients happy. You may point the same variables at OpenAI, Azure-compatible gateways, or another compatible provider.
 
-Live RAGAS evaluation is opt-in. Set `RAGAS_EVALUATOR_MODEL`; response relevance also needs `RAGAS_EMBEDDING_MODEL`. These models must be supported by the configured endpoint. If they are absent or fail, semantic scores remain null and affected cases are marked `SKIPPED`.
+RAGAS uses its modern collections API with an Ollama-backed `AsyncOpenAI` client for both evaluator prompts and embeddings. `FactualCorrectness` compares the response with the reference, `AnswerRelevancy` compares the response with the question using embeddings, and `Faithfulness` checks claims against retrieved contexts. The example environment uses `mistral` for evaluator prompts and `nomic-embed-text` for embeddings. If a model is absent or a metric fails, that score remains null and affected cases are marked `SKIPPED`; no fallback score is fabricated.
 
 ## Start the API
 

@@ -38,7 +38,9 @@ def write_reports(records: list[dict[str, Any]], report_dir: str | Path) -> tupl
 
 def calculate_summary(records: list[dict[str, Any]]) -> dict[str, Any]:
     counts = {"PASS": 0, "FAIL": 0, "SKIPPED": 0}
-    categories: dict[str, dict[str, int]] = defaultdict(lambda: dict(counts))
+    categories: dict[str, dict[str, int]] = defaultdict(
+        lambda: {"PASS": 0, "FAIL": 0, "SKIPPED": 0}
+    )
     for record in records:
         status = record["pass_fail"]
         counts[status] += 1

@@ -19,5 +19,7 @@ def test_report_generator_writes_parseable_files(tmp_path) -> None:
     assert json.loads(json_path.read_text(encoding="utf-8"))[0]["pass_fail"] == "PASS"
     with csv_path.open(encoding="utf-8") as handle:
         assert list(csv.DictReader(handle))[0]["test_id"] == "X"
-    assert calculate_summary([record])["pass_rate"] == 100.0
+    summary = calculate_summary([record])
+    assert summary["pass_rate"] == 100.0
+    assert summary["categories"] == {"normal": {"PASS": 1, "FAIL": 0, "SKIPPED": 0}}
 
