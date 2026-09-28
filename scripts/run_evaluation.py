@@ -8,6 +8,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+import httpx
 from pydantic import ValidationError
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -40,6 +41,22 @@ def _base_record(case: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def provider_available(settings: Settings) -> tuple[bool, str | None]:
+    """Fail fast for a missing local Ollama server instead of timing out per case."""
+
+    is_local = "localhost" in settings.llm_base_url or "127.0.0.1" in settings.llm_base_url
+    if not settings.live_llm_configured:
+        return False, "Live LLM is not configured."
+    if not is_local:
+        return True, None
+    try:
+        response = httpx.get(f"{settings.llm_base_url}/models", timeout=3.0)
+        response.raise_for_status()
+        return True, None
+    except httpx.HTTPError:
+        return False, "Local Ollama endpoint is unavailable; start Ollama and pull the configured model."
+
+
 def run() -> list[dict[str, Any]]:
     settings = Settings.from_env()
     cases = load_cases()
@@ -49,6 +66,9 @@ def run() -> list[dict[str, Any]]:
     )
     chatbot = ChatbotService(retriever, client, settings.top_k, settings.retrieval_min_score)
     evaluator = RagasEvaluator(settings)
+    provider_ready, provider_error = provider_available(settings)
+    if not provider_ready:
+        print(provider_error)
     records: list[dict[str, Any]] = []
 
     for case in cases:
@@ -62,6 +82,11 @@ def run() -> list[dict[str, Any]]:
                 http_status = 422
             decision = score_case(case, {}, http_status=http_status)
             record.update(rule_checks=decision.rule_checks, pass_fail=decision.status, failure_reason=decision.failure_reason)
+            records.append(record)
+            continue
+
+        if not provider_ready:
+            record["failure_reason"] = provider_error or "Live generation unavailable."
             records.append(record)
             continue
 
