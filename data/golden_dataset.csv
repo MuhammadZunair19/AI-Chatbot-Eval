@@ -1,0 +1,11 @@
+test_id,category,prompt,reference_answer
+NORMAL-001,normal,"How long is the AcmeCloud free trial?","AcmeCloud offers a 14-day free trial."
+NORMAL-002,normal,"Do I need a credit card to start the trial?","A credit card is not required to start the AcmeCloud free trial."
+NORMAL-003,normal,"How much does the Standard plan cost per month?","The Standard plan costs $19 per user per month when billed monthly."
+NORMAL-004,normal,"Can I get a prorated refund if I cancel my monthly subscription early?","AcmeCloud does not provide prorated refunds for unused time on monthly subscriptions."
+NORMAL-005,normal,"What is the maximum file size for a Business account?","Business accounts can upload individual files up to 5 GB."
+NORMAL-006,normal,"Does AcmeCloud support multi-factor authentication?","AcmeCloud supports multi-factor authentication using authenticator applications."
+NORMAL-007,normal,"How many API requests per minute can I make on the Business plan?","Business plans allow up to 600 API requests per minute per API token."
+NORMAL-008,normal,"Which integrations does AcmeCloud support?","AcmeCloud provides supported integrations for Slack, Microsoft Teams, GitHub, and Google Drive."
+NORMAL-009,normal,"How do I export my workspace data?","Workspace administrators can export data from Settings, then Data Management, then Export."
+NORMAL-010,normal,"What data regions can Business customers choose for a new workspace?","Business customers can choose between United States and European Union data regions for a new workspace."
